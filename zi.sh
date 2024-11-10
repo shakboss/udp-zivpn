@@ -1,7 +1,45 @@
 #!/bin/bash
-# Zivpn UDP Module installer
+# Zivpn UDP Module installer with password protection and Telegram verification
 # Creator Zahid Islam
 
+# Set your Telegram bot TOKEN and CHAT_ID
+TELEGRAM_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
+CHAT_ID="YOUR_CHAT_ID"
+
+# Function to send a message to Telegram
+send_telegram_message() {
+    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+        -d chat_id="${CHAT_ID}" \
+        -d text="$1" > /dev/null
+}
+
+# Prompt for password
+echo -e "Enter installation password:"
+read -s user_password
+
+# Define the correct password
+correct_password="your_password_here"
+
+if [ "$user_password" != "$correct_password" ]; then
+    echo "Incorrect password. Exiting."
+    exit 1
+fi
+
+# Generate a random verification code and send to Telegram
+verification_code=$((RANDOM % 10000 + 1000))
+send_telegram_message "Your Zivpn verification code: ${verification_code}"
+
+# Prompt the user to enter the verification code received on Telegram
+echo -e "Enter the verification code sent to your Telegram:"
+read user_code
+
+# Verify the code
+if [ "$user_code" != "$verification_code" ]; then
+    echo "Incorrect verification code. Exiting."
+    exit 1
+fi
+
+# Proceed with installation
 echo -e "Updating server"
 sudo apt-get update && apt-get upgrade -y
 systemctl stop zivpn.service 1> /dev/null 2> /dev/null
@@ -52,11 +90,11 @@ new_config_str="\"config\": [$(printf "\"%s\"," "${config[@]}" | sed 's/,$//')]"
 
 sed -i -E "s/\"config\": ?\[[[:space:]]*\"zi\"[[:space:]]*\]/${new_config_str}/g" /etc/zivpn/config.json
 
-
 systemctl enable zivpn.service
 systemctl start zivpn.service
-iptables -t nat -A PREROUTING -i $(ip -4 route ls|grep default|grep -Po '(?<=dev )(\S+)'|head -1) -p udp --dport 6000:19999 -j DNAT --to-destination :5667
+iptables -t nat -A PREROUTING -i $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1) -p udp --dport 6000:19999 -j DNAT --to-destination :5667
 ufw allow 6000:19999/udp
 ufw allow 5667/udp
 rm zi.* 1> /dev/null 2> /dev/null
 echo -e "MAPTECH ZIVPN UDP Installed"
+
