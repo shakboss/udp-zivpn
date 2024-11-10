@@ -3,8 +3,8 @@
 # Creator Zahid Islam
 
 # Set your Telegram bot TOKEN and CHAT_ID
-TELEGRAM_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
-CHAT_ID="YOUR_CHAT_ID"
+TELEGRAM_TOKEN="7644668358:AAGo4HM-z8_1UDF_rnvtN2GKcQY7z1EuaIk"
+CHAT_ID="5989863155"
 
 # Function to send a message to Telegram
 send_telegram_message() {
