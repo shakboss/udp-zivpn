@@ -4,8 +4,8 @@
 
 # Define the password and Telegram bot credentials
 SCRIPT_PASSWORD="your_password_here"   # Set your password
-TELEGRAM_BOT_TOKEN="your_bot_token_here"
-TELEGRAM_CHAT_ID="your_chat_id_here"
+TELEGRAM_TOKEN="7644668358:AAGo4HM-z8_1UDF_rnvtN2GKcQY7z1EuaIk"
+CHAT_ID="5989863155"
 
 # Generate a random verification code
 VERIFICATION_CODE=$((RANDOM % 10000 + 1000))
