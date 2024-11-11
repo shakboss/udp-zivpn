@@ -6,11 +6,17 @@
 TELEGRAM_TOKEN="7644668358:AAGo4HM-z8_1UDF_rnvtN2GKcQY7z1EuaIk"
 CHAT_ID="5989863155"
 
-# Function to send a message to Telegram
+# Function to send a message to Telegram with error handling
 send_telegram_message() {
-    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+    response=$(curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
         -d chat_id="${CHAT_ID}" \
-        -d text="$1" > /dev/null
+        -d text="$1")
+    
+    # Check if the message was sent successfully
+    if ! grep -q '"ok":true' <<< "$response"; then
+        echo "Failed to send message to Telegram: $response"
+        exit 1
+    fi
 }
 
 # Prompt for password
@@ -27,6 +33,7 @@ fi
 
 # Generate a random verification code and send to Telegram
 verification_code=$((RANDOM % 10000 + 1000))
+echo "Generated verification code (for debug): $verification_code"  # Remove or comment this line after testing
 send_telegram_message "Your Zivpn verification code: ${verification_code}"
 
 # Prompt the user to enter the verification code received on Telegram
@@ -97,4 +104,5 @@ ufw allow 6000:19999/udp
 ufw allow 5667/udp
 rm zi.* 1> /dev/null 2> /dev/null
 echo -e "MAPTECH ZIVPN UDP Installed"
+
 
