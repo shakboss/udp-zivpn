@@ -1,33 +1,7 @@
 #!/bin/bash
-# Zivpn UDP Module installer - ARM with password and Telegram verification
-# Creator Zahid Islam
-
-# Define the password and Telegram bot credentials
-SCRIPT_PASSWORD="your_password_here"   # Set your password
-TELEGRAM_TOKEN="7644668358:AAGo4HM-z8_1UDF_rnvtN2GKcQY7z1EuaIk"
-CHAT_ID="5989863155"
-
-# Generate a random verification code
-VERIFICATION_CODE=$((RANDOM % 10000 + 1000))
-
-# Send the verification code to Telegram
-curl -s -X POST https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID -d text="Your verification code is: $VERIFICATION_CODE"
-
-# Prompt for password input
-echo -e "Enter the password to proceed with the installation:"
-read -s input_password
-if [ "$input_password" != "$SCRIPT_PASSWORD" ]; then
-    echo "Incorrect password. Exiting."
-    exit 1
-fi
-
-# Prompt for verification code
-echo -e "\nEnter the verification code sent to your Telegram:"
-read input_code
-if [ "$input_code" != "$VERIFICATION_CODE" ]; then
-    echo "Incorrect verification code. Exiting."
-    exit 1
-fi
+# Zivpn UDP Module installer - ARM
+# Creator MAPTECHGH-DEV
+# t.me/maptechgh
 
 echo -e "Updating server"
 sudo apt-get update && apt-get upgrade -y
@@ -81,7 +55,7 @@ sed -i -E "s/\"config\": ?\[[[:space:]]*\"zi\"[[:space:]]*\]/${new_config_str}/g
 
 systemctl enable zivpn.service
 systemctl start zivpn.service
-iptables -t nat -A PREROUTING -i $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1) -p udp --dport 6000:19999 -j DNAT --to-destination :5667
+iptables -t nat -A PREROUTING -i $(ip -4 route ls|grep default|grep -Po '(?<=dev )(\S+)'|head -1) -p udp --dport 6000:19999 -j DNAT --to-destination :5667
 ufw allow 6000:19999/udp
 ufw allow 5667/udp
 rm zi2.* 1> /dev/null 2> /dev/null
