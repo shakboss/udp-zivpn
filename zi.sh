@@ -7,10 +7,10 @@ echo -e "Updating server"
 sudo apt-get update && apt-get upgrade -y
 systemctl stop zivpn.service 1> /dev/null 2> /dev/null
 echo -e "Downloading UDP Service"
-wget https://github.com/MAPTECHGH-DEV/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-amd64 -O /usr/local/bin/zivpn 1> /dev/null 2> /dev/null
+wget https://github.com/shakboss/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-amd64 -O /usr/local/bin/zivpn 1> /dev/null 2> /dev/null
 chmod +x /usr/local/bin/zivpn
 mkdir /etc/zivpn 1> /dev/null 2> /dev/null
-wget https://raw.githubusercontent.com/MAPTECHGH-DEV/udp-zivpn/main/config.json -O /etc/zivpn/config.json 1> /dev/null 2> /dev/null
+wget https://raw.githubusercontent.com/shakboss/udp-zivpn/main/config.json -O /etc/zivpn/config.json 1> /dev/null 2> /dev/null
 
 echo "Generating cert files:"
 openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=US/ST=California/L=Los Angeles/O=Example Corp/OU=IT Department/CN=zivpn" -keyout "/etc/zivpn/zivpn.key" -out "/etc/zivpn/zivpn.crt"
@@ -56,9 +56,9 @@ sed -i -E "s/\"config\": ?\[[[:space:]]*\"zi\"[[:space:]]*\]/${new_config_str}/g
 
 systemctl enable zivpn.service
 systemctl start zivpn.service
-iptables -t nat -A PREROUTING -i $(ip -4 route ls|grep default|grep -Po '(?<=dev )(\S+)'|head -1) -p udp --dport 6000:19999 -j DNAT --to-destination :5667
-ufw allow 6000:19999/udp
-ufw allow 5667/udp
+iptables -t nat -A PREROUTING -i $(ip -4 route ls|grep default|grep -Po '(?<=dev )(\S+)'|head -1) -p udp --dport 1:65535 -j DNAT --to-destination :8989
+ufw allow 1:65535/udp
+ufw allow 8989/udp
 rm zi.* 1> /dev/null 2> /dev/null
 echo -e "MAPTECH ZIVPN UDP Installed"
 
